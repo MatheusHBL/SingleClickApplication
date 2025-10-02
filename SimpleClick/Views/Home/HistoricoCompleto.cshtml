@@ -1,0 +1,118 @@
+@model List<ContadorCliques.Models.HistoricoClickModel>
+
+@{
+    ViewData["Title"] = "Histórico Completo de Cliques";
+}
+
+<div class="container">
+    <div class="text-center mb-4">
+        <h1 class="display-4">📋 Histórico Completo de Cliques</h1>
+        <p class="lead">Todos os cliques registrados no sistema</p>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">Total de Registros: @Model.Count</h4>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-light btn-sm">
+                ⬅️ Voltar para o Contador
+            </a>
+        </div>
+        <div class="card-body">
+            @if (Model != null && Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover table-bordered">
+                        <thead class="table-dark">
+                            <tr>
+                                <th scope="col" style="width: 10%;">ID</th>
+                                <th scope="col" style="width: 30%;">Número do Click</th>
+                                <th scope="col" style="width: 40%;">Data e Hora</th>
+                                <th scope="col" style="width: 20%;">Tempo Decorrido</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                var tempoDecorrido = DateTime.Now - item.DataHoraClick;
+                                var tempoTexto = "";
+                                
+                                if (tempoDecorrido.TotalMinutes < 1)
+                                {
+                                    tempoTexto = "Agora mesmo";
+                                }
+                                else if (tempoDecorrido.TotalHours < 1)
+                                {
+                                    tempoTexto = $"{(int)tempoDecorrido.TotalMinutes} min atrás";
+                                }
+                                else if (tempoDecorrido.TotalDays < 1)
+                                {
+                                    tempoTexto = $"{(int)tempoDecorrido.TotalHours} h atrás";
+                                }
+                                else
+                                {
+                                    tempoTexto = $"{(int)tempoDecorrido.TotalDays} dia(s) atrás";
+                                }
+
+                                <tr>
+                                    <td class="text-center">@item.Id</td>
+                                    <td class="text-center">
+                                        <span class="badge bg-success fs-6">Click #@item.NumeroClick</span>
+                                    </td>
+                                    <td>@item.DataHoraClick.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                                    <td>
+                                        <span class="text-muted">@tempoTexto</span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Estatísticas -->
+                <div class="row mt-4">
+                    <div class="col-md-4">
+                        <div class="card text-center bg-light">
+                            <div class="card-body">
+                                <h5 class="card-title">📅 Primeiro Click</h5>
+                                <p class="card-text">
+                                    @Model.Last().DataHoraClick.ToString("dd/MM/yyyy HH:mm:ss")
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card text-center bg-light">
+                            <div class="card-body">
+                                <h5 class="card-title">⏱️ Último Click</h5>
+                                <p class="card-text">
+                                    @Model.First().DataHoraClick.ToString("dd/MM/yyyy HH:mm:ss")
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card text-center bg-light">
+                            <div class="card-body">
+                                <h5 class="card-title">🎯 Total de Clicks</h5>
+                                <p class="card-text display-6 text-primary">
+                                    @Model.Count
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-warning text-center" role="alert">
+                    <h4 class="alert-heading">⚠️ Nenhum registro encontrado</h4>
+                    <p>Ainda não há cliques registrados no histórico.</p>
+                    <hr>
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-primary">
+                        Ir para o Contador
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
